@@ -1,34 +1,29 @@
 # DHCP, DNS, FTP et SSH
 
-
 ---
 
-
-## Summary:
-1. ### Virtual environments:
-   Install two Debian 12.5.0 virtual environments, no graphical interface, in a virtual network. Implies immediate system check for updates/update after install.
+## Summary: 
+1. ### Virtual environments: 
+    Install two Debian 12.5.0 virtual environments, no graphical interface, in a virtual network. Implies immediate system check for updates/update after install.
 2. ### DHCP Config:
-   Configure a DHCP service on the first machine.
-3. ### FTP and SSH:
-   Configure FTP and SSH services on the second machine, then use SSH for SFTP connections.
-4. ### DNS Config:
-   Configure a DNS service on the first machine.
-5. ### Testing:
-   Conduct a few connection tests.
-6. ### Basic security features:
-   Configure a few security features.
+    Configure a DHCP service on the first machine.
+3. ### FTP and SSH: 
+    Configure FTP and SSH services on the second machine, then use SSH for SFTP connections.
+4. ### DNS Config: 
+    Configure a DNS service on the first machine.
+5. ### Testing: 
+    Conduct a few connection tests.
+6. ### Basic security features: 
+    Configure a few security features.
 7. ### Further security testing:
-   Conduct security tests, additionnal security and overall configuration improvement.
-
+    Conduct security tests, additionnal security and overall configuration improvement.
 
 Virtual environments
 ---
 ---
 
-
-We start with the configuration of two Debian 12.5.0 virtual environments.   
+We start with the configuration of two Debian 12.5.0 virtual environments.    
 We use QEMU/KVM, for its reliability, security features, and rapidity.
-
 
 **Specifications:**
 * Hard disk: 15G
@@ -36,16 +31,13 @@ We use QEMU/KVM, for its reliability, security features, and rapidity.
 * Network adapter: NAT
 * CPU: 1 core
 
-
 **First machine:**
 * Hostname: ns
-* Main user: --------
-
+* Main user: -------
 
 **Second machine:**
 * Hostname: server2
-* Main user: --------
-
+* Main user: ------
 
 **Virtual Network Settings**
 * Name: network
@@ -54,13 +46,32 @@ We use QEMU/KVM, for its reliability, security features, and rapidity.
 * Gateway: 172.16.69.2
 * Transfer Type: NAT
 
-
 DHCP Configuration
 ---
 ---
 ### On the machine we will use as a DHCP:
-We install the package isc-dhcp-server. 
+We install the package isc-dhcp-server.  
 We then check the network cards in the /etc/network/interfaces file.
-We change the used card with a static IP address.
-
-
+Here we change the cards IP address and put it to static. We set up a gateway in 172.16.69.2, 
+and Google's DNS: 8.8.8.8.
+```shell
+auto enp1s0
+iface enp1s0 inet static
+address 172.16.69.10
+netmask 255.255.255.0
+gateway 172.16.69.2
+dns-nameservers 8.8.8.8
+```
+We then configure the dhcp in /etc/dhcp/dhcpd.conf:
+We add those lines:
+```shell
+subnet 172.16.69.0 netmask 255.255.255.0 {
+  range 172.16.69.11 172.16.69.50;
+  option domain-name-servers 8.8.8.8;
+  option routers 172.16.69.2;
+  option broadcast-address 172.16.69.254;
+  default-lease-time 600;
+  max-lease-time 7200;
+}
+```
+Here we specify the DHCP's options on this subnet, we exclude from the range our own address and the gateway.
