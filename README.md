@@ -39,12 +39,12 @@ We use QEMU/KVM, for its reliability, security features, and rapidity.
 
 **First machine:**
 * Hostname: ns
-* Main user: meijden
+* Main user: --------
 
 
 **Second machine:**
 * Hostname: server2
-* Main user: pierre
+* Main user: --------
 
 
 **Virtual Network Settings**
