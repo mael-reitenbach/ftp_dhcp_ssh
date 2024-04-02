@@ -67,7 +67,7 @@ dns-nameservers 8.8.8.8
 We then restart the interface with:
 `ifdown enp1s0`
 `ifup enp1s0`
-
+In /etc/default/isc-dhcp-server, we specify our interface's name in `INTERFACESv4=""`
 We then configure the dhcp in /etc/dhcp/dhcpd.conf:
 We add those lines at the very end of the file:
 ```shell
