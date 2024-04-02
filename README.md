@@ -64,6 +64,9 @@ netmask 255.255.255.0
 gateway 172.16.69.1
 dns-nameservers 8.8.8.8
 ```
+We then restart the interface with:
+`ifdown enp1s0`
+`ifup enp1s0`
 
 We then configure the dhcp in /etc/dhcp/dhcpd.conf:
 We add those lines:
