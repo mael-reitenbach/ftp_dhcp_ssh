@@ -54,6 +54,8 @@ We install the package isc-dhcp-server.
 We then check the network cards in the /etc/network/interfaces file.
 Here we change the cards IP address and put it to static. We set up a gateway in 172.16.69.2, 
 and Google's DNS: 8.8.8.8.
+We add those lines at the end of the file, deleting the old interface's configuration. 
+Please replace "enp1s0" with your own interface's name.
 ```shell
 auto enp1s0
 iface enp1s0 inet static
