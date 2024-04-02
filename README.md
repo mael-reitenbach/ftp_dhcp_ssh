@@ -69,7 +69,7 @@ We then restart the interface with:
 `ifup enp1s0`
 
 We then configure the dhcp in /etc/dhcp/dhcpd.conf:
-We add those lines:
+We add those lines at the very end of the file:
 ```shell
 subnet 172.16.69.0 netmask 255.255.255.0 {
   range 172.16.69.11 172.16.69.50;
