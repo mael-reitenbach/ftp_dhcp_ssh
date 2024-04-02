@@ -42,7 +42,7 @@ We use QEMU/KVM, for its reliability, security features, and rapidity.
 **Virtual Network Settings**
 * Name: network
 * IP Address Class: B
-* Network IP Address: 172.16.69.0
+* Network IP Address: 172.16.69.0/24
 * Gateway: 172.16.69.2
 * Transfer Type: NAT
 
