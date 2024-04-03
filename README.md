@@ -113,8 +113,82 @@ FTP and SSH Configuration
 ---
 ---
 
+#### SSH
+
 On the second machine ("server2"), we start by installing the openssh-server package.  
 `sudo apt install openssh-server`
-We open the configuration file, deactivate root login, and change the default port to 25565.
+We open the configuration file, deactivate root login, and change the default port to 25565 (for example).  
+`sudo vi /etc/ssh/sshd_conf`  
+_Please note that those operations are not mandatory but recommended as the first steps for basic ssh security._
+To connect in ssh to the virtual machine, we use, on our host: ssh -p 25565 ------@172.16.69.15
 
-`sudo vi /etc/ssh/sshd_conf`
+#### FTP
+
+We first install the proftpd package.  
+`sudo apt install openssh-server`  
+To configure it, we open the configuration file:  
+`sudo vi /etc/proftpd/proftpd.conf`  
+Here we uncomment `DefaultRoot ~` to lock the users into their directories, and we change `Port 21 ` to `Port 21999` aswell as `MaxInstances 1` to allow for only one session at a time.  
+We don't want people to connect to real users on the machine so we create a virtual user, using:  
+`ftpasswd --passwd --file /etc/proftpd/ftpd.passwd --name=************ --change-password`
+We then go into the proftpd configuration file and add thoses lines after `DefaultRoot ~`  
+```
+RequireValidShell off
+AuthUserFile /etc/proftpd/ftpd.passwd
+AuthOrder mod_auth_file.c
+```
+
+It specifies to proftpd that users won't be able to connect with classic shell users in `RequireValidShell off`, the `AuthUserFile /etc/proftpd/ftpd.passwd` indicates to proftpd to look for the virtual users in the ftpd.passwd file.
+
+#### SFTP
+
+Using SFTP is more simple than FTP, as we already have the openssh package installed.
+For security purposes, we start by adding a group sftpusers on our server.
+We then create the user "------------" which belongs to this group. We redirect its shell to /bin/false with: 
+`sudo useradd -m -g sftpusers -s /bin/false ------------`
+We change its password with `sudo passwd ------------`
+We then go into the sshd_config file, and add/uncomment those lines at the end of the file:
+```text
+Subsystem sftp internal-sftp
+
+Match Group sftpusers
+	X11Forwarding no
+	AllowTcpForwarding no
+	ChrootDirectory /sftp/%u
+	ForceCommand internal-sftp
+```
+These specify that the sftp group will be sftpusers, with their files being in the directory /sftp/%u (username).
+We then create the folder: `sudo mkdir -p /sftp/laplateforme/files`  
+And give the right permissions:
+```text
+sudo chown root:sftpusers /sftp/laplateforme
+sudo chmod 755 /sftp/laplateforme
+sudo chown laplateforme:sftpusers /sftp/laplateforme/files/
+```
+Finally, we restart the ssh service: `sudo systemctl restart ssh`
+We can now connect to the server through sftp using a client like FileZilla.
+
+Testing
+---
+---
+
+We can conduct a few tests to see if everything works fine:  
+We try root connection in ssh to the server: it should not be allowed.  
+We try root/any real user connection through ftp: it should not be allowed.  
+We make sure virtual user connection works through ftp.  
+We try to connect through sftp with real user without sftpusers group permissions: it should not be allowed.  
+We make sure real user with sftpusers group permissions connection works through sftp.
+
+Basic security features
+---
+---
+
+Those are the ones we already implemented: segmentation of real/virtual users for FTP/SFTP, permissions and groups, specific directories for each user through FTP/SFTP.  
+Changing the default ports to avoid bots mapping our server, disable root login with either protocols.
+
+Further security testing
+---
+---
+
+We can try nmapping our machines to see what information we can gather about them.   
+We can check iptables configuration and filter ports.
