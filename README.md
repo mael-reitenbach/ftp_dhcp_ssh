@@ -67,7 +67,8 @@ dns-nameservers 8.8.8.8
 We then restart the interface with:
 `ifdown enp1s0`
 `ifup enp1s0`
-In /etc/default/isc-dhcp-server, we specify our interface's name in `INTERFACESv4=""`
+In /etc/default/isc-dhcp-server, we specify our interface's name in `INTERFACESv4=""`   
+
 We then configure the dhcp in /etc/dhcp/dhcpd.conf:
 We add those lines at the very end of the file:
 ```shell
@@ -84,7 +85,8 @@ Here we specify the DHCP's options on this subnet, we exclude from the range our
 Please note that the gateway address is by default the network address .1, so here it is 172.16.69.1.
 
 After DHCP configuration, we restart the service using  
-`sudo systemctl restart isc-dhcp-server`
+`sudo systemctl restart networking` first, to restart networking interfaces   
+`sudo systemctl restart isc-dhcp-server` we then use 
 
 Now we check the configuration on the other machine:
 ```shell
@@ -114,4 +116,5 @@ FTP and SSH Configuration
 On the second machine ("server2"), we start by installing the openssh-server package.  
 `sudo apt install openssh-server`
 We open the configuration file, deactivate root login, and change the default port to 25565.
-sudo vi /etc/ssh/sshd_conf`
+
+`sudo vi /etc/ssh/sshd_conf`
