@@ -168,6 +168,43 @@ sudo chown laplateforme:sftpusers /sftp/laplateforme/files/
 Finally, we restart the ssh service: `sudo systemctl restart ssh`
 We can now connect to the server through sftp using a client like FileZilla.
 
+DNS Configuration
+---
+---
+
+We will use here the packages bind9. 
+`sudo apt install bind9 dnsutils`
+
+We then modify this file: `sudo vi /etc/bind/named.conf.options`  
+```text
+acl private-network {
+172.16.69.0/24;
+};
+
+options {
+    	directory "/var/cache/bind";
+    	allow-query { localhost; private-network; };
+    	allow-transfer { localhost; };
+    	forwarders { 8.8.8.8; };
+    	recursion yes;
+    	dnssec-validation auto;
+    	listen-on-v6 { any; };
+};
+
+```
+Then, in the file: `sudo vi /etc/bind/named.conf.local
+`
+We add those lines: 
+```text
+zone "ftp.com" {
+    	type master;
+    	file "/etc/bind/db.ftp.com";
+    	allow-update { none; };
+};
+
+```
+We check the syntax with: `sudo named-checkconf`
+
 Testing
 ---
 ---
