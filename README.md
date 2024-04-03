@@ -76,7 +76,7 @@ subnet 172.16.69.0 netmask 255.255.255.0 {
   range 172.16.69.11 172.16.69.50;
   option domain-name-servers 8.8.8.8;
   option routers 172.16.69.1;
-  option broadcast-address 172.16.69.254;
+  option broadcast-address 172.16.69.255;
   default-lease-time 600;
   max-lease-time 7200;
 }
